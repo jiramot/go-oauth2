@@ -1,13 +1,15 @@
 package mocks
 
-import "github.com/jiramot/go-oauth2/internal/core/domains"
-
-var Clients = []domains.Client{
-    domains.Client{
-        ClientId:     "1234",
-        ClientSecret: "secret",
-        Scope:        "openid profile",
-        RedirectUrl:  "http://partner.com",
-        GrantType:    "authorization_code refresh_token",
-    },
+type client struct {
+    ClientId        string
+    ClientSecret    string
+    PartnerEndpoint string
 }
+
+var Client = client{
+    ClientId:        "1234",
+    ClientSecret:    "12345",
+    PartnerEndpoint: "https://partner.com",
+}
+var LoginChallengeCode = "123456"
+var AuthorizationCode = "123456789"

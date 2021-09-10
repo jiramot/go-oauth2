@@ -46,10 +46,14 @@ func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
         GrantType:    request.GrantType,
         ClientId:     request.ClientId,
         ClientSecret: request.ClientSecret,
+        Code:         request.Code,
     }
     accessToken, _ := hdl.tokenUseCase.GenerateToken(token)
-
-    return ctx.JSON(http.StatusOK, accessToken)
+    response := tokenResponse{
+        TokenType:   "Bearer",
+        AccessToken: accessToken,
+    }
+    return ctx.JSON(http.StatusOK, response)
 }
 
 func (hdl *PublicHttpHandler) IntrospectToken(ctx echo.Context) error {
@@ -76,6 +80,12 @@ type TokenRequest struct {
     GrantType    string `json:"grant_type" form:"grant_type" validate:"required"`
     ClientId     string `json:"client_id" form:"client_id"validate:"required"`
     ClientSecret string `json:"client_secret" form:"client_secret" validate:"required"`
+    Code         string `json:"code"`
+}
+
+type tokenResponse struct {
+    AccessToken string `json:"access_token"`
+    TokenType   string `json:"token_type"`
 }
 
 type TokenIntrospectRequest struct {

@@ -3,6 +3,7 @@ package services
 import (
     "errors"
     "github.com/jiramot/go-oauth2/internal/core/domains"
+    "github.com/jiramot/go-oauth2/internal/core/mocks"
 )
 
 type adminService struct {
@@ -17,9 +18,9 @@ func (svc *adminService) AcceptLogin(loginChallengeCode string, cif string) (dom
     //Check login challenge
     //Generate authorization code for client_id ... and save
 
-    if loginChallengeCode == "12345" {
+    if loginChallengeCode == mocks.LoginChallengeCode {
         return domains.AuthorizationCode{
-            Code: "123456789",
+            Code: mocks.AuthorizationCode,
         }, nil
     } else {
         return domains.AuthorizationCode{}, errors.New("Invalid request")

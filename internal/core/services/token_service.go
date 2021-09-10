@@ -3,6 +3,7 @@ package services
 import (
     "errors"
     "github.com/jiramot/go-oauth2/internal/core/domains"
+    "github.com/jiramot/go-oauth2/internal/core/mocks"
     "github.com/jiramot/go-oauth2/internal/core/ports"
 )
 
@@ -17,7 +18,10 @@ func NewTokenService(tokenizePort ports.TokenizePort) *tokenService {
 }
 
 func (svc *tokenService) GenerateToken(token domains.Token) (string, error) {
-    if token.ClientId == "1234" && token.ClientSecret == "12345" {
+    if token.ClientId == mocks.Client.ClientId &&
+        token.ClientSecret == mocks.Client.ClientSecret &&
+        token.Code == mocks.AuthorizationCode &&
+        token.GrantType == "authorization_code" {
         payload := domains.NewTokenPayload(token.ClientId, "cif", "openid profile", "next", domains.TokenTtl)
         tokenString, _ := svc.tokenizePort.CreateToken(payload)
         return tokenString, nil
