@@ -4,6 +4,7 @@ import (
     "github.com/go-playground/validator"
     "github.com/jiramot/go-oauth2/internal/core/services"
     "github.com/jiramot/go-oauth2/internal/handlers"
+    "github.com/jiramot/go-oauth2/internal/repositories"
     "github.com/labstack/echo/v4"
     "github.com/labstack/echo/v4/middleware"
     "net/http"
@@ -14,7 +15,8 @@ func main() {
     adminHdl := handlers.NewAdminHttpHandler(adminSvc)
 
     authorizationService := services.NewAuthorizationService()
-    tokenService := services.NewTokenService()
+    tokenizeRepository := repositories.NewTokenizeRepository()
+    tokenService := services.NewTokenService(tokenizeRepository)
     hdl := handlers.NewPublicHandler(authorizationService, tokenService)
 
     e := echo.New()
