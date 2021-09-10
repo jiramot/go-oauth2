@@ -11,32 +11,29 @@ import (
 )
 
 func main() {
-    adminSvc := services.NewAdminService()
-    adminHdl := handlers.NewAdminHttpHandler(adminSvc)
+    adminService := services.NewAdminService()
 
-    authorizationService := services.NewAuthorizationService()
     tokenizeRepository := repositories.NewTokenizeRepository()
     tokenService := services.NewTokenService(tokenizeRepository)
-    hdl := handlers.NewPublicHandler(authorizationService, tokenService)
+
+    adminHdl := handlers.NewAdminHttpHandler(adminService, tokenService)
 
     e := echo.New()
     e.Use(middleware.Logger())
-    e.Validator = &CustomValidator{validator: validator.New()}
-    e.GET("/oauth2/auth", hdl.Authorization)
-    e.POST("/oauth2/token", hdl.Token)
-    e.POST("/oauth2/introspect", hdl.IntrospectToken)
-    //Admin
+    e.Validator = &AdminValidator{validator: validator.New()}
     e.POST("oauth2/auth/request/login/accept", adminHdl.AcceptLoginChallenge)
-    e.Logger.Fatal(e.Start(":8080"))
+    e.POST("/oauth2/introspect", adminHdl.IntrospectToken)
+    e.Logger.Fatal(e.Start(":8081"))
 }
 
-type CustomValidator struct {
+type AdminValidator struct {
     validator *validator.Validate
 }
 
-func (cv *CustomValidator) Validate(i interface{}) error {
+func (cv *AdminValidator) Validate(i interface{}) error {
     if err := cv.validator.Struct(i); err != nil {
         return echo.NewHTTPError(http.StatusBadRequest, err.Error())
     }
     return nil
 }
+

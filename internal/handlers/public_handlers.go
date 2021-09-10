@@ -56,17 +56,6 @@ func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
     return ctx.JSON(http.StatusOK, response)
 }
 
-func (hdl *PublicHttpHandler) IntrospectToken(ctx echo.Context) error {
-    request := new(TokenIntrospectRequest)
-    if err := util.BindAndValidateRequest(ctx, request); err != nil {
-        return ctx.String(http.StatusBadRequest, "")
-    }
-    payload, err := hdl.tokenUseCase.IntrospectToken(request.Token)
-    if err != nil {
-        return ctx.String(http.StatusBadRequest, "Bad json")
-    }
-    return ctx.JSON(http.StatusOK, payload)
-}
 
 type AuthorizationRequest struct {
     ResponseType string `query:"response_type" validate:"required"`
@@ -88,6 +77,4 @@ type tokenResponse struct {
     TokenType   string `json:"token_type"`
 }
 
-type TokenIntrospectRequest struct {
-    Token string `form:"token" validate:"required"`
-}
+
