@@ -3,6 +3,7 @@ package handlers
 import (
     "github.com/jiramot/go-oauth2/internal/core/domains"
     "github.com/jiramot/go-oauth2/internal/core/ports"
+    util "github.com/jiramot/go-oauth2/internal/pkg"
     "github.com/labstack/echo/v4"
     "net/http"
 )
@@ -25,11 +26,8 @@ func NewPublicHandler(
 
 func (hdl *PublicHttpHandler) Authorization(ctx echo.Context) error {
     request := new(AuthorizationRequest)
-    if err := ctx.Bind(request); err != nil {
-        return ctx.JSON(http.StatusBadRequest, nil)
-    }
-    if err := ctx.Validate(request); err != nil {
-        return err
+    if err := util.BindAndValidateRequest(ctx, request); err != nil {
+        return ctx.String(http.StatusBadRequest, "")
     }
     response, err := hdl.authorizationUseCase.AuthorizationCode(request.Amr, request.ClientId, request.RedirectUrl, request.Scope)
 
@@ -41,11 +39,8 @@ func (hdl *PublicHttpHandler) Authorization(ctx echo.Context) error {
 
 func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
     request := new(TokenRequest)
-    if err := ctx.Bind(request); err != nil {
-        return ctx.JSON(http.StatusBadRequest, nil)
-    }
-    if err := ctx.Validate(request); err != nil {
-        return err
+    if err := util.BindAndValidateRequest(ctx, request); err != nil {
+        return ctx.String(http.StatusBadRequest, "")
     }
     token := domains.Token{
         GrantType:    request.GrantType,
@@ -55,6 +50,18 @@ func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
     accessToken, _ := hdl.tokenUseCase.GenerateToken(token)
 
     return ctx.JSON(http.StatusOK, accessToken)
+}
+
+func (hdl *PublicHttpHandler) IntrospectToken(ctx echo.Context) error {
+    request := new(TokenIntrospectRequest)
+    if err := util.BindAndValidateRequest(ctx, request); err != nil {
+        return ctx.String(http.StatusBadRequest, "")
+    }
+    payload, err := hdl.tokenUseCase.IntrospectToken(request.Token)
+    if err != nil {
+        return ctx.String(http.StatusBadRequest, "Bad json")
+    }
+    return ctx.JSON(http.StatusOK, payload)
 }
 
 type AuthorizationRequest struct {
@@ -69,4 +76,8 @@ type TokenRequest struct {
     GrantType    string `json:"grant_type" form:"grant_type" validate:"required"`
     ClientId     string `json:"client_id" form:"client_id"validate:"required"`
     ClientSecret string `json:"client_secret" form:"client_secret" validate:"required"`
+}
+
+type TokenIntrospectRequest struct {
+    Token string `form:"token" validate:"required"`
 }

@@ -24,6 +24,7 @@ func main() {
     e.Validator = &CustomValidator{validator: validator.New()}
     e.GET("/oauth2/auth", hdl.Authorization)
     e.POST("/oauth2/token", hdl.Token)
+    e.POST("/oauth2/introspect", hdl.IntrospectToken)
     //Admin
     e.POST("oauth2/auth/request/login/accept", adminHdl.AcceptLoginChallenge)
     e.Logger.Fatal(e.Start(":8080"))

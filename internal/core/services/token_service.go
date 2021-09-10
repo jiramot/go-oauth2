@@ -26,3 +26,11 @@ func (svc *tokenService) GenerateToken(token domains.Token) (string, error) {
     }
 
 }
+
+func (svc *tokenService) IntrospectToken(token string) (*domains.TokenPayload, error) {
+    payload, err := svc.tokenizePort.ValidateToken(token)
+    if err != nil {
+        return &domains.TokenPayload{}, err
+    }
+    return payload, nil
+}
