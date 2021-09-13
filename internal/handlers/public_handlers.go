@@ -34,7 +34,7 @@ func (hdl *PublicHttpHandler) Authorization(ctx echo.Context) error {
     if err != nil {
         return ctx.String(http.StatusBadRequest, "Bad request")
     }
-    return ctx.JSON(http.StatusOK, response)
+    return ctx.JSON(http.StatusOK, AuthorizationResponse{RedirectUrl: response.LoginEndpointUrl})
 }
 
 func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
@@ -56,7 +56,6 @@ func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
     return ctx.JSON(http.StatusOK, response)
 }
 
-
 type AuthorizationRequest struct {
     ResponseType string `query:"response_type" validate:"required"`
     Amr          string `query:"Amr" default:"sso"`
@@ -65,16 +64,18 @@ type AuthorizationRequest struct {
     Scope        string `query:"Scope"`
 }
 
+type AuthorizationResponse struct {
+    RedirectUrl string `json:"redirect_url"`
+}
+
 type TokenRequest struct {
     GrantType    string `json:"grant_type" form:"grant_type" validate:"required"`
     ClientId     string `json:"client_id" form:"client_id"validate:"required"`
     ClientSecret string `json:"client_secret" form:"client_secret" validate:"required"`
-    Code         string `json:"code"`
+    Code         string `json:"code" form:"code" `
 }
 
 type tokenResponse struct {
     AccessToken string `json:"access_token"`
     TokenType   string `json:"token_type"`
 }
-
-

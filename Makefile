@@ -1,7 +1,10 @@
 BINARY=run
 
-run:
-	 go run cmd/main.go
+public:
+	 go run cmd/public.go
+
+admin:
+	 go run cmd/admin.go
 
 build:
 	go build -o bin/engine cmd/main.go
@@ -12,4 +15,4 @@ test:
 lint:
 	golangci-lint run --fix --fast ./...
 	
-.PHONY: run
+.PHONY: admin
