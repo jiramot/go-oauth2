@@ -57,11 +57,15 @@ func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
 }
 
 type AuthorizationRequest struct {
-    ResponseType string `query:"response_type" validate:"required"`
-    Amr          string `query:"Amr" default:"sso"`
-    ClientId     string `query:"client_id" validate:"required"`
-    RedirectUrl  string `query:"redirect_url"`
-    Scope        string `query:"Scope"`
+    ResponseType        string `query:"response_type" validate:"required"`
+    Amr                 string `query:"Amr" default:"sso"`
+    ClientId            string `query:"client_id" validate:"required"`
+    RedirectUrl         string `query:"redirect_url"`
+    Scope               string `query:"Scope"`
+    State               string `query:"state"`
+    Nonce               string `query:"nonce"`
+    CodeChallenge       string `query:"code_challenge"'`
+    CodeChallengeMethod string `query:"code_challenge_method"'`
 }
 
 type AuthorizationResponse struct {
@@ -70,9 +74,10 @@ type AuthorizationResponse struct {
 
 type TokenRequest struct {
     GrantType    string `json:"grant_type" form:"grant_type" validate:"required"`
-    ClientId     string `json:"client_id" form:"client_id"validate:"required"`
-    ClientSecret string `json:"client_secret" form:"client_secret" validate:"required"`
-    Code         string `json:"code" form:"code" `
+    ClientId     string `json:"client_id" form:"client_id" validate:"required"`
+    ClientSecret string `json:"client_secret" form:"client_secret"`
+    Code         string `json:"code" form:"code"`
+    CodeVerifier string `json:"code_verifier" form:"code_verifier"`
 }
 
 type tokenResponse struct {
