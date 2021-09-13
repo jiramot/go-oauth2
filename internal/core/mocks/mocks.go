@@ -12,4 +12,5 @@ var Client = client{
     PartnerEndpoint: "https://partner.com",
 }
 var LoginChallengeCode = "123456"
+var LoginEndpointUrl = "http://localhost:3000"
 var AuthorizationCode = "123456789"

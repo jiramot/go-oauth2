@@ -20,6 +20,7 @@ func main() {
 
     e := echo.New()
     e.Use(middleware.Logger())
+    e.Use(middleware.CORS()) //FOR TESTING FRONTEND
     e.Validator = &AdminValidator{validator: validator.New()}
     e.POST("oauth2/auth/request/login/accept", adminHdl.AcceptLoginChallenge)
     e.POST("/oauth2/introspect", adminHdl.IntrospectToken)

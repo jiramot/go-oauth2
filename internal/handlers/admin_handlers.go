@@ -50,7 +50,7 @@ func (hdl *AdminHttpHandler) IntrospectToken(ctx echo.Context) error {
 
 type (
     acceptLoginChallengeResponse struct {
-        RedirectTo string `json:"redirect_to"`
+        RedirectTo string `json:"redirect_url"`
     }
     acceptLoginChallengeRequest struct {
         Cif string `json:"cif" validate:"required"`

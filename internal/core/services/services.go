@@ -20,7 +20,7 @@ func (svc *authorizationService) AuthorizationCode(amr string, clientId string, 
     //Generate login challenge then SAVE challenge to authentication_core_request,
     if clientId == mocks.Client.ClientId {
         loginChallengeCode := mocks.LoginChallengeCode
-        loginEndpoint := "http://localhost:8081/login"
+        loginEndpoint := mocks.LoginEndpointUrl
         if amr == "next" {
             loginEndpoint = "next://login"
         }
