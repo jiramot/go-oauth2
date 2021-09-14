@@ -29,7 +29,15 @@ func (hdl *PublicHttpHandler) Authorization(ctx echo.Context) error {
     if err := util.BindAndValidateRequest(ctx, request); err != nil {
         return ctx.String(http.StatusBadRequest, "")
     }
-    response, err := hdl.authorizationUseCase.AuthorizationCode(request.Amr, request.ClientId, request.RedirectUrl, request.Scope, "", "", "", "")
+    response, err := hdl.authorizationUseCase.AuthorizationCode(request.Amr,
+        request.ClientId,
+        request.RedirectUrl,
+        request.Scope,
+        request.State,
+        request.CodeChallenge,
+        request.CodeChallengeMethod,
+        request.Nonce,
+    )
 
     if err != nil {
         return ctx.String(http.StatusBadRequest, "Bad request")
