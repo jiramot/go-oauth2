@@ -29,7 +29,7 @@ func (hdl *PublicHttpHandler) Authorization(ctx echo.Context) error {
     if err := util.BindAndValidateRequest(ctx, request); err != nil {
         return ctx.String(http.StatusBadRequest, "")
     }
-    response, err := hdl.authorizationUseCase.AuthorizationCode(request.Amr, request.ClientId, request.RedirectUrl, request.Scope)
+    response, err := hdl.authorizationUseCase.AuthorizationCode(request.Amr, request.ClientId, request.RedirectUrl, request.Scope, "", "", "", "")
 
     if err != nil {
         return ctx.String(http.StatusBadRequest, "Bad request")
@@ -47,6 +47,7 @@ func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
         ClientId:     request.ClientId,
         ClientSecret: request.ClientSecret,
         Code:         request.Code,
+        CodeVerifier: request.CodeVerifier,
     }
     accessToken, _ := hdl.tokenUseCase.GenerateToken(token)
     response := tokenResponse{

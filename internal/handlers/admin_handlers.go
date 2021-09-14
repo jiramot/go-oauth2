@@ -23,12 +23,12 @@ func NewAdminHttpHandler(adminUseCase ports.AdminAcceptLoginUseCase, tokenUseCas
 }
 
 func (hdl *AdminHttpHandler) AcceptLoginChallenge(ctx echo.Context) error {
-    loginChallengeCodeQueryPrams := ctx.QueryParam("login_challenge")
+    loginChallengeCode := ctx.QueryParam("login_challenge")
     request := new(acceptLoginChallengeRequest)
     if err := pkg.BindAndValidateRequest(ctx, request); err != nil {
         return ctx.String(http.StatusBadRequest, "")
     }
-    if authCode, err := hdl.adminUseCase.AcceptLogin(loginChallengeCodeQueryPrams, request.Cif); err == nil {
+    if authCode, err := hdl.adminUseCase.AcceptLogin(loginChallengeCode, request.Cif); err == nil {
         redirectUrl := fmt.Sprintf("%s?code=%s", mocks.Client.PartnerEndpoint, authCode.Code)
         return ctx.JSON(http.StatusOK, acceptLoginChallengeResponse{RedirectTo: redirectUrl})
     } else {
