@@ -57,7 +57,7 @@ func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
         Code:         request.Code,
         CodeVerifier: request.CodeVerifier,
     }
-    accessToken, _ := hdl.tokenUseCase.GenerateToken(token)
+    accessToken, _ := hdl.tokenUseCase.CreateTokenForAuthorizationCodeGrantType(token)
     response := tokenResponse{
         TokenType:   "Bearer",
         AccessToken: accessToken,

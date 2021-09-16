@@ -25,13 +25,13 @@ func (repo *loginChallengeRepository) SaveLoginChallenge(challenge *domains.Logi
     if err != nil {
         return err
     }
-    errs := repo.client.Set(ctx, fmt.Sprintf("code_challenge:%s", challenge.LoginChallengeCode), json, 5*time.Minute).Err()
+    errs := repo.client.Set(ctx, repo.getKey(challenge.LoginChallengeCode), json, 5*time.Minute).Err()
     return errs
 }
 
 func (repo *loginChallengeRepository) GetLoginChallenge(loginChallengeCode string) (*domains.LoginChallenge, error) {
     ctx := context.Background()
-    val, err := repo.client.Get(ctx, fmt.Sprintf("code_challenge:%s", loginChallengeCode)).Result()
+    val, err := repo.client.Get(ctx, repo.getKey(loginChallengeCode)).Result()
     if err != nil {
         return nil, err
     }
@@ -42,4 +42,14 @@ func (repo *loginChallengeRepository) GetLoginChallenge(loginChallengeCode strin
         return nil, err
     }
     return challenge, nil
+}
+
+func (repo *loginChallengeRepository) RemoveLoginChallenge(loginChallengeCode string) error {
+    ctx := context.Background()
+    err := repo.client.Del(ctx, repo.getKey(loginChallengeCode)).Err()
+    return err
+}
+
+func (repo *loginChallengeRepository) getKey(code string) string {
+    return fmt.Sprintf("login_challenge:%s", code)
 }

@@ -19,10 +19,12 @@ func main() {
     })
 
     loginChallengeRepository := repositories.NewLoginChallengeRepository(rdb)
-    adminService := services.NewAdminService(loginChallengeRepository)
+    authorizationCodeRepository := repositories.NewAuthorizationCodeRepository(rdb)
+    adminService := services.NewAdminService(loginChallengeRepository, authorizationCodeRepository)
 
     tokenizeRepository := repositories.NewTokenizeRepository()
-    tokenService := services.NewTokenService(tokenizeRepository)
+
+    tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository)
 
     adminHdl := handlers.NewAdminHttpHandler(adminService, tokenService)
 
@@ -45,4 +47,3 @@ func (cv *AdminValidator) Validate(i interface{}) error {
     }
     return nil
 }
-

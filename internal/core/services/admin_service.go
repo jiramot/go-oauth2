@@ -3,36 +3,60 @@ package services
 import (
     "errors"
     "github.com/jiramot/go-oauth2/internal/core/domains"
-    "github.com/jiramot/go-oauth2/internal/core/mocks"
     "github.com/jiramot/go-oauth2/internal/core/ports"
-    "log"
+    "github.com/segmentio/ksuid"
 )
 
 type adminService struct {
-    loginChallengePort ports.LoginChallengePort
+    loginChallengePort    ports.LoginChallengePort
+    authorizationCodePort ports.AuthorizationCodePort
 }
 
-func NewAdminService(loginChallengePort ports.LoginChallengePort) *adminService {
+func NewAdminService(
+    loginChallengePort ports.LoginChallengePort,
+    authorizationCodePort ports.AuthorizationCodePort,
+) *adminService {
     return &adminService{
-        loginChallengePort: loginChallengePort,
+        loginChallengePort:    loginChallengePort,
+        authorizationCodePort: authorizationCodePort,
     }
 }
 
-func (svc *adminService) AcceptLogin(loginChallengeCode string, cif string) (domains.AuthorizationCode, error) {
-    //TODO
+func (svc *adminService) AcceptLogin(loginChallengeCode string, cif string) (*domains.AuthorizationCode, error) {
     loginChallenge, _ := svc.loginChallengePort.GetLoginChallenge(loginChallengeCode)
-    //Generate authorization code for client_id ... and save
-    code := mocks.AuthorizationCode
+    svc.loginChallengePort.RemoveLoginChallenge(loginChallengeCode)
     if loginChallenge != nil {
-        log.Println(loginChallenge)
-        return domains.AuthorizationCode{
-            Code: code,
-        }, nil
+        authorizationCode := createAuthorizationCodeFromLoginChallenge(loginChallengeCode, loginChallenge, cif)
+        err := svc.authorizationCodePort.SaveAuthorizationCode(authorizationCode)
+        if err != nil {
+            return nil, err
+        } else {
+            return authorizationCode, nil
+        }
     } else {
-        return domains.AuthorizationCode{}, errors.New("Invalid request")
+        return nil, errors.New("invalid request")
     }
 }
 
 func (svc *adminService) RejectLogin(loginChallengeCode string, cif string) error {
     return nil
+}
+
+func createAuthorizationCodeFromLoginChallenge(
+    loginChallengeCode string,
+    loginChallenge *domains.LoginChallenge,
+    cif string,
+) *domains.AuthorizationCode {
+    return &domains.AuthorizationCode{
+        Code:                ksuid.New().String(),
+        LoginChallengeCode:  loginChallengeCode,
+        CodeChallengeMethod: loginChallenge.CodeChallengeMethod,
+        CodeChallenge:       loginChallenge.CodeChallenge,
+        State:               loginChallenge.State,
+        ClientId:            loginChallenge.ClientId,
+        RedirectUrl:         loginChallenge.RedirectUrl,
+        Scope:               loginChallenge.Scope,
+        Amr:                 loginChallenge.Amr,
+        Cif:                 cif,
+    }
 }
