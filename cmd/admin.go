@@ -2,6 +2,7 @@ package main
 
 import (
     "github.com/go-playground/validator"
+    "github.com/go-redis/redis/v8"
     "github.com/jiramot/go-oauth2/internal/core/services"
     "github.com/jiramot/go-oauth2/internal/handlers"
     "github.com/jiramot/go-oauth2/internal/repositories"
@@ -11,7 +12,14 @@ import (
 )
 
 func main() {
-    adminService := services.NewAdminService()
+    rdb := redis.NewClient(&redis.Options{
+        Addr:     "localhost:6379",
+        Password: "",
+        DB:       0,
+    })
+
+    loginChallengeRepository := repositories.NewLoginChallengeRepository(rdb)
+    adminService := services.NewAdminService(loginChallengeRepository)
 
     tokenizeRepository := repositories.NewTokenizeRepository()
     tokenService := services.NewTokenService(tokenizeRepository)

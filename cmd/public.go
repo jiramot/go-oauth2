@@ -4,6 +4,7 @@ import (
     "net/http"
 
     "github.com/go-playground/validator"
+    "github.com/go-redis/redis/v8"
     "github.com/jiramot/go-oauth2/internal/core/services"
     "github.com/jiramot/go-oauth2/internal/handlers"
     "github.com/jiramot/go-oauth2/internal/repositories"
@@ -12,7 +13,14 @@ import (
 )
 
 func main() {
-    authorizationService := services.NewAuthorizationService()
+    rdb := redis.NewClient(&redis.Options{
+        Addr:     "localhost:6379",
+        Password: "",
+        DB:       0,
+    })
+
+    loginChallengeRepository := repositories.NewLoginChallengeRepository(rdb)
+    authorizationService := services.NewAuthorizationService(loginChallengeRepository)
     tokenizeRepository := repositories.NewTokenizeRepository()
     tokenService := services.NewTokenService(tokenizeRepository)
     hdl := handlers.NewPublicHandler(authorizationService, tokenService)
@@ -21,7 +29,7 @@ func main() {
     e.Use(middleware.Logger())
     e.Use(middleware.CORS())
     e.Validator = &PublicValidator{validator: validator.New()}
-    e.GET("/oauth2/auth", hdl.Authorization)
+    e.GET("/oauth2/auth", hdl.RequestAuthorization)
     e.POST("/oauth2/token", hdl.Token)
     e.Logger.Fatal(e.Start(":8080"))
 }

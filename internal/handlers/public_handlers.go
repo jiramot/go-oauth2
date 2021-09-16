@@ -24,12 +24,12 @@ func NewPublicHandler(
     }
 }
 
-func (hdl *PublicHttpHandler) Authorization(ctx echo.Context) error {
+func (hdl *PublicHttpHandler) RequestAuthorization(ctx echo.Context) error {
     request := new(AuthorizationRequest)
     if err := util.BindAndValidateRequest(ctx, request); err != nil {
         return ctx.String(http.StatusBadRequest, "")
     }
-    response, err := hdl.authorizationUseCase.AuthorizationCode(request.Amr,
+    response, err := hdl.authorizationUseCase.RequestAuthorizationCode(request.Amr,
         request.ClientId,
         request.RedirectUrl,
         request.Scope,

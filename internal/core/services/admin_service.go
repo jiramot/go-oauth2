@@ -4,23 +4,29 @@ import (
     "errors"
     "github.com/jiramot/go-oauth2/internal/core/domains"
     "github.com/jiramot/go-oauth2/internal/core/mocks"
+    "github.com/jiramot/go-oauth2/internal/core/ports"
+    "log"
 )
 
 type adminService struct {
+    loginChallengePort ports.LoginChallengePort
 }
 
-func NewAdminService() *adminService {
-    return &adminService{}
+func NewAdminService(loginChallengePort ports.LoginChallengePort) *adminService {
+    return &adminService{
+        loginChallengePort: loginChallengePort,
+    }
 }
 
 func (svc *adminService) AcceptLogin(loginChallengeCode string, cif string) (domains.AuthorizationCode, error) {
     //TODO
-    //Check login challenge
+    loginChallenge, _ := svc.loginChallengePort.GetLoginChallenge(loginChallengeCode)
     //Generate authorization code for client_id ... and save
-
-    if loginChallengeCode == mocks.LoginChallengeCode {
+    code := mocks.AuthorizationCode
+    if loginChallenge != nil {
+        log.Println(loginChallenge)
         return domains.AuthorizationCode{
-            Code: mocks.AuthorizationCode,
+            Code: code,
         }, nil
     } else {
         return domains.AuthorizationCode{}, errors.New("Invalid request")
