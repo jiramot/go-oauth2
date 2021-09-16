@@ -3,6 +3,7 @@ package services
 import (
     "errors"
     "github.com/jiramot/go-oauth2/internal/core/domains"
+    "github.com/jiramot/go-oauth2/internal/core/mocks"
     "github.com/jiramot/go-oauth2/internal/core/ports"
     "github.com/jiramot/go-oauth2/internal/pkg/pkce"
 )
@@ -23,16 +24,18 @@ func NewTokenService(
 }
 
 func (svc *tokenService) CreateTokenForAuthorizationCodeGrantType(token domains.Token) (string, error) {
-    //check client secret or code verifier
     authorizationCode, _ := svc.authorizationCodePort.GetAuthorizationCodeFromCode(token.Code)
     svc.authorizationCodePort.RemoveAuthorizationCodeFromCode(token.Code)
     if authorizationCode == nil {
         return "", errors.New("")
     }
-
     isValidClientSecret := false
     if token.ClientSecret != "" {
-        if token.ClientId == "1234" && token.ClientSecret == "12345" {
+        client, err := mocks.NewClientDb().FindClientByClientId(token.ClientId)
+        if err != nil {
+            return "", errors.New("invalid request")
+        }
+        if token.ClientSecret == client.ClientSecret {
             isValidClientSecret = true
         }
     }
@@ -53,7 +56,7 @@ func (svc *tokenService) CreateTokenForAuthorizationCodeGrantType(token domains.
         tokenString, _ := svc.tokenizePort.CreateToken(payload)
         return tokenString, nil
     } else {
-        return "", errors.New("")
+        return "", errors.New("invalid request")
     }
 }
 

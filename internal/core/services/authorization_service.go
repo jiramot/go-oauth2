@@ -29,16 +29,16 @@ func (svc *authorizationService) RequestAuthorizationCode(
     codeChallengeMethod string,
     nonce string,
 ) (domains.Authorization, error) {
-    //Check AMR Table
-    //Check Client ID & redirect url & scope are match
-    //Generate login challenge then SAVE challenge to authentication_core_request,
-    if clientId == mocks.Client.ClientId {
+    db := mocks.NewClientDb()
+    client, _ := db.FindClientByClientId(clientId)
+    if clientId == client.ClientId {
         loginChallengeCode := ksuid.New().String()
         loginEndpoint := mocks.LoginEndpointUrl
 
         if amr == "next" {
             loginEndpoint = "next://login"
         }
+
         loginChallenge := &domains.LoginChallenge{
             LoginChallengeCode:  loginChallengeCode,
             CodeChallengeMethod: codeChallengeMethod,

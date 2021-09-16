@@ -23,7 +23,6 @@ func main() {
     adminService := services.NewAdminService(loginChallengeRepository, authorizationCodeRepository)
 
     tokenizeRepository := repositories.NewTokenizeRepository()
-
     tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository)
 
     adminHdl := handlers.NewAdminHttpHandler(adminService, tokenService)

@@ -21,9 +21,11 @@ func main() {
 
     loginChallengeRepository := repositories.NewLoginChallengeRepository(rdb)
     authorizationService := services.NewAuthorizationService(loginChallengeRepository)
+
     tokenizeRepository := repositories.NewTokenizeRepository()
     authorizationCodeRepository := repositories.NewAuthorizationCodeRepository(rdb)
     tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository)
+
     hdl := handlers.NewPublicHandler(authorizationService, tokenService)
 
     e := echo.New()

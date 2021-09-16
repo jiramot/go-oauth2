@@ -3,7 +3,7 @@ package handlers
 import (
     "fmt"
     "github.com/jiramot/go-oauth2/internal/core/mocks"
-    "github.com/jiramot/go-oauth2/internal/core/ports"
+    usecases2 "github.com/jiramot/go-oauth2/internal/core/usecases"
     "github.com/jiramot/go-oauth2/internal/pkg"
     util "github.com/jiramot/go-oauth2/internal/pkg"
     "github.com/labstack/echo/v4"
@@ -11,13 +11,13 @@ import (
 )
 
 type AdminHttpHandler struct {
-    adminUseCase    ports.AdminAcceptLoginUseCase
-    tokenUseCase ports.TokenUseCase
+    adminUseCase usecases2.AdminAcceptLoginUseCase
+    tokenUseCase usecases2.TokenUseCase
 }
 
-func NewAdminHttpHandler(adminUseCase ports.AdminAcceptLoginUseCase, tokenUseCase ports.TokenUseCase) *AdminHttpHandler {
+func NewAdminHttpHandler(adminUseCase usecases2.AdminAcceptLoginUseCase, tokenUseCase usecases2.TokenUseCase) *AdminHttpHandler {
     return &AdminHttpHandler{
-        adminUseCase:    adminUseCase,
+        adminUseCase: adminUseCase,
         tokenUseCase: tokenUseCase,
     }
 }
@@ -29,7 +29,8 @@ func (hdl *AdminHttpHandler) AcceptLoginChallenge(ctx echo.Context) error {
         return ctx.String(http.StatusBadRequest, "")
     }
     if authCode, err := hdl.adminUseCase.AcceptLogin(loginChallengeCode, request.Cif); err == nil {
-        redirectUrl := fmt.Sprintf("%s?code=%s", mocks.Client.PartnerEndpoint, authCode.Code)
+        client, _ := mocks.NewClientDb().FindClientByClientId(authCode.ClientId)
+        redirectUrl := fmt.Sprintf("%s?code=%s", client.RedirectUrl, authCode.Code)
         return ctx.JSON(http.StatusOK, acceptLoginChallengeResponse{RedirectTo: redirectUrl})
     } else {
         return ctx.JSON(http.StatusBadRequest, nil)

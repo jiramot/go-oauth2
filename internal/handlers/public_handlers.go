@@ -2,20 +2,20 @@ package handlers
 
 import (
     "github.com/jiramot/go-oauth2/internal/core/domains"
-    "github.com/jiramot/go-oauth2/internal/core/ports"
+    usecases2 "github.com/jiramot/go-oauth2/internal/core/usecases"
     util "github.com/jiramot/go-oauth2/internal/pkg"
     "github.com/labstack/echo/v4"
     "net/http"
 )
 
 type PublicHttpHandler struct {
-    authorizationUseCase ports.AuthorizationUseCase
-    tokenUseCase         ports.TokenUseCase
+    authorizationUseCase usecases2.AuthorizationUseCase
+    tokenUseCase         usecases2.TokenUseCase
 }
 
 func NewPublicHandler(
-    authorizationUseCase ports.AuthorizationUseCase,
-    tokenUseCase ports.TokenUseCase,
+    authorizationUseCase usecases2.AuthorizationUseCase,
+    tokenUseCase usecases2.TokenUseCase,
 ) *PublicHttpHandler {
 
     return &PublicHttpHandler{

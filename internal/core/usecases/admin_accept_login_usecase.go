@@ -1,4 +1,4 @@
-package ports
+package usecases
 
 import "github.com/jiramot/go-oauth2/internal/core/domains"
 
