@@ -11,5 +11,5 @@ type AuthorizationUseCase interface {
         codeChallenge string,
         codeChallengeMethod string,
         nonce string,
-    ) (domains.Authorization, error)
+    ) (*domains.Authorization, error)
 }

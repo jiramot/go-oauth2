@@ -29,7 +29,8 @@ func (hdl *PublicHttpHandler) RequestAuthorization(ctx echo.Context) error {
     if err := util.BindAndValidateRequest(ctx, request); err != nil {
         return ctx.String(http.StatusBadRequest, "")
     }
-    response, err := hdl.authorizationUseCase.RequestAuthorizationCode(request.Amr,
+    response, err := hdl.authorizationUseCase.RequestAuthorizationCode(
+        request.Amr,
         request.ClientId,
         request.RedirectUrl,
         request.Scope,
@@ -57,10 +58,9 @@ func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
         Code:         request.Code,
         CodeVerifier: request.CodeVerifier,
     }
-    accessToken, _ := hdl.tokenUseCase.CreateTokenForAuthorizationCodeGrantType(token)
-    response := tokenResponse{
-        TokenType:   "Bearer",
-        AccessToken: accessToken,
+    response, err := hdl.tokenUseCase.CreateTokenForAuthorizationCodeGrantType(token)
+    if err != nil {
+        return ctx.String(http.StatusBadRequest, "Bad request")
     }
     return ctx.JSON(http.StatusOK, response)
 }
@@ -87,9 +87,4 @@ type TokenRequest struct {
     ClientSecret string `json:"client_secret" form:"client_secret"`
     Code         string `json:"code" form:"code"`
     CodeVerifier string `json:"code_verifier" form:"code_verifier"`
-}
-
-type tokenResponse struct {
-    AccessToken string `json:"access_token"`
-    TokenType   string `json:"token_type"`
 }

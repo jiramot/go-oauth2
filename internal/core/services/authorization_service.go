@@ -28,15 +28,23 @@ func (svc *authorizationService) RequestAuthorizationCode(
     codeChallenge string,
     codeChallengeMethod string,
     nonce string,
-) (domains.Authorization, error) {
+) (*domains.Authorization, error) {
     db := mocks.NewClientDb()
     client, _ := db.FindClientByClientId(clientId)
-    if clientId == client.ClientId {
+    if client != nil && clientId == client.ClientId {
         loginChallengeCode := ksuid.New().String()
         loginEndpoint := mocks.LoginEndpointUrl
 
         if amr == "next" {
             loginEndpoint = "next://login"
+        }
+
+        if scope != "" && scope != client.Scope {
+            return nil, errors.New("invalid scope")
+        }
+
+        if redirectUrl != "" && redirectUrl != client.RedirectUrl {
+            return nil, errors.New("invalid redirect url")
         }
 
         loginChallenge := &domains.LoginChallenge{
@@ -46,17 +54,17 @@ func (svc *authorizationService) RequestAuthorizationCode(
             State:               state,
             ClientId:            clientId,
             RedirectUrl:         redirectUrl,
-            Scope:               scope,
+            Scope:               client.Scope,
             Amr:                 amr,
         }
         svc.loginChallengePort.SaveLoginChallenge(loginChallenge)
 
-        return domains.Authorization{
+        return &domains.Authorization{
             LoginChallenge:   loginChallengeCode,
             LoginEndpointUrl: fmt.Sprintf("%s?login_challenge=%s", loginEndpoint, loginChallengeCode),
         }, nil
     }
 
-    return domains.Authorization{}, errors.New("No client found")
+    return nil, errors.New("No client found")
 
 }

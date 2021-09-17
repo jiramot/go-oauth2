@@ -23,17 +23,17 @@ func NewTokenService(
     }
 }
 
-func (svc *tokenService) CreateTokenForAuthorizationCodeGrantType(token domains.Token) (string, error) {
+func (svc *tokenService) CreateTokenForAuthorizationCodeGrantType(token domains.Token) (*domains.AccessToken, error) {
     authorizationCode, _ := svc.authorizationCodePort.GetAuthorizationCodeFromCode(token.Code)
     svc.authorizationCodePort.RemoveAuthorizationCodeFromCode(token.Code)
     if authorizationCode == nil {
-        return "", errors.New("")
+        return nil, errors.New("")
     }
     isValidClientSecret := false
     if token.ClientSecret != "" {
         client, err := mocks.NewClientDb().FindClientByClientId(token.ClientId)
         if err != nil {
-            return "", errors.New("invalid request")
+            return nil, errors.New("invalid request")
         }
         if token.ClientSecret == client.ClientSecret {
             isValidClientSecret = true
@@ -54,9 +54,14 @@ func (svc *tokenService) CreateTokenForAuthorizationCodeGrantType(token domains.
             domains.TokenTtl,
         )
         tokenString, _ := svc.tokenizePort.CreateToken(payload)
-        return tokenString, nil
+        accessToken := &domains.AccessToken{
+            AccessToken: tokenString,
+            ExpireAt:    payload.ExpiredAt,
+            TokenType:   "Bearer",
+        }
+        return accessToken, nil
     } else {
-        return "", errors.New("invalid request")
+        return nil, errors.New("invalid request")
     }
 }
 
