@@ -6,8 +6,17 @@ public:
 admin:
 	 go run cmd/admin.go
 
-build:
-	go build -o bin/engine cmd/main.go
+build-admin:
+	docker build -t ghcr.io/jiramot/go-oauth2/admin:latest -f Dockerfile.admin . --no-cache
+
+build-public:
+	docker build -t ghcr.io/jiramot/go-oauth2/public:latest -f Dockerfile.public . --no-cache
+
+push-admin:
+	docker push ghcr.io/jiramot/go-oauth2/admin:latest
+
+push-public:
+	docker push ghcr.io/jiramot/go-oauth2/public:latest
 
 test:	
 	go test -short  ./...

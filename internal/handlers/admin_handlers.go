@@ -3,7 +3,7 @@ package handlers
 import (
     "fmt"
     "github.com/jiramot/go-oauth2/internal/core/mocks"
-    usecases2 "github.com/jiramot/go-oauth2/internal/core/usecases"
+    "github.com/jiramot/go-oauth2/internal/core/usecases"
     "github.com/jiramot/go-oauth2/internal/pkg"
     util "github.com/jiramot/go-oauth2/internal/pkg"
     "github.com/labstack/echo/v4"
@@ -11,11 +11,11 @@ import (
 )
 
 type AdminHttpHandler struct {
-    adminUseCase usecases2.AdminAcceptLoginUseCase
-    tokenUseCase usecases2.TokenUseCase
+    adminUseCase usecases.AdminAcceptLoginUseCase
+    tokenUseCase usecases.TokenUseCase
 }
 
-func NewAdminHttpHandler(adminUseCase usecases2.AdminAcceptLoginUseCase, tokenUseCase usecases2.TokenUseCase) *AdminHttpHandler {
+func NewAdminHttpHandler(adminUseCase usecases.AdminAcceptLoginUseCase, tokenUseCase usecases.TokenUseCase) *AdminHttpHandler {
     return &AdminHttpHandler{
         adminUseCase: adminUseCase,
         tokenUseCase: tokenUseCase,

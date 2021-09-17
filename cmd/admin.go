@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "github.com/go-playground/validator"
     "github.com/go-redis/redis/v8"
     "github.com/jiramot/go-oauth2/internal/core/services"
@@ -9,11 +10,20 @@ import (
     "github.com/labstack/echo/v4"
     "github.com/labstack/echo/v4/middleware"
     "net/http"
+    "os"
 )
 
 func main() {
+    redisHost := os.Getenv("REDIS_HOST")
+    if redisHost == "" {
+        redisHost = "localhost"
+    }
+    redisPort := os.Getenv("REDIS_PORT")
+    if redisPort == "" {
+        redisPort = "6379"
+    }
     rdb := redis.NewClient(&redis.Options{
-        Addr:     "localhost:6379",
+        Addr:     fmt.Sprintf("%s:%s", redisHost, redisPort),
         Password: "",
         DB:       0,
     })
