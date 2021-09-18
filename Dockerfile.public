@@ -16,6 +16,8 @@ FROM alpine
 RUN apk update && apk upgrade && \
     apk --update --no-cache add tzdata
 
+LABEL org.opencontainers.image.source="ghcr.io/jiramot/go-oauth2/public"
+
 WORKDIR /app
 EXPOSE 8080
 COPY --from=builder /app/bin/engine /app/engine
