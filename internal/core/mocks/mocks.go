@@ -36,4 +36,4 @@ func (client *clientDb) FindClientByClientId(clientId string) (*domains.Client, 
     return nil, errors.New("")
 }
 
-var LoginEndpointUrl = "http://localhost:3000"
+var LoginEndpointUrl = "http://localhost:3000/login"
