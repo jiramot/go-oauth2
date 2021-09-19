@@ -7,7 +7,10 @@ admin:
 	 go run cmd/admin.go
 
 build-admin:
-	docker build -t ghcr.io/jiramot/go-oauth2/admin:latest -f Dockerfile.admin . --no-cache
+	docker build -t ghcr.io/jiramot/go-oauth2/admin:latest -f Dockerfile.admin .
+
+run-admin:
+	docker run -it --rm -p 8081:8081 ghcr.io/jiramot/go-oauth2/admin:latest
 
 build-public:
 	docker build -t ghcr.io/jiramot/go-oauth2/public:latest -f Dockerfile.public . --no-cache

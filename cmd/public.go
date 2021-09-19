@@ -2,6 +2,7 @@ package main
 
 import (
     "fmt"
+    "github.com/jiramot/go-oauth2/internal/config"
     "net/http"
     "os"
 
@@ -15,6 +16,11 @@ import (
 )
 
 func main() {
+    config, err := config.Load()
+    if err != nil {
+        return
+    }
+
     redisHost := os.Getenv("REDIS_HOST")
     if redisHost == "" {
         redisHost = "localhost"
@@ -30,11 +36,11 @@ func main() {
     })
 
     loginChallengeRepository := repositories.NewLoginChallengeRepository(rdb)
-    authorizationService := services.NewAuthorizationService(loginChallengeRepository)
+    authorizationService := services.NewAuthorizationService(loginChallengeRepository, config.Client, config.LoginEndpoint)
 
     tokenizeRepository := repositories.NewTokenizeRepository()
     authorizationCodeRepository := repositories.NewAuthorizationCodeRepository(rdb)
-    tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository)
+    tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository, config.Client)
 
     hdl := handlers.NewPublicHandler(authorizationService, tokenService)
 

@@ -2,7 +2,6 @@ package handlers
 
 import (
     "fmt"
-    "github.com/jiramot/go-oauth2/internal/core/mocks"
     "github.com/jiramot/go-oauth2/internal/core/usecases"
     "github.com/jiramot/go-oauth2/internal/pkg"
     util "github.com/jiramot/go-oauth2/internal/pkg"
@@ -29,8 +28,7 @@ func (hdl *AdminHttpHandler) AcceptLoginChallenge(ctx echo.Context) error {
         return ctx.String(http.StatusBadRequest, "Bad request")
     }
     if authCode, err := hdl.adminUseCase.AcceptLogin(loginChallengeCode, request.Cif); err == nil {
-        client, _ := mocks.NewClientDb().FindClientByClientId(authCode.ClientId)
-        redirectUrl := fmt.Sprintf("%s?code=%s&state=%s", client.RedirectUrl, authCode.Code, authCode.State)
+        redirectUrl := fmt.Sprintf("%s?code=%s&state=%s", authCode.RedirectUrl, authCode.Code, authCode.State)
         return ctx.JSON(http.StatusOK, acceptLoginChallengeResponse{RedirectTo: redirectUrl})
     } else {
         return ctx.String(http.StatusBadRequest, "Bad request")

@@ -11,5 +11,6 @@ require (
 	github.com/labstack/echo/v4 v4.5.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/segmentio/ksuid v1.0.4
+	github.com/spf13/viper v1.8.1
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )

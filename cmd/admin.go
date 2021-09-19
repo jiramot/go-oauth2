@@ -4,6 +4,7 @@ import (
     "fmt"
     "github.com/go-playground/validator"
     "github.com/go-redis/redis/v8"
+    "github.com/jiramot/go-oauth2/internal/config"
     "github.com/jiramot/go-oauth2/internal/core/services"
     "github.com/jiramot/go-oauth2/internal/handlers"
     "github.com/jiramot/go-oauth2/internal/repositories"
@@ -14,6 +15,10 @@ import (
 )
 
 func main() {
+    config, err := config.Load()
+    if err != nil {
+        return
+    }
     redisHost := os.Getenv("REDIS_HOST")
     if redisHost == "" {
         redisHost = "localhost"
@@ -33,7 +38,7 @@ func main() {
     adminService := services.NewAdminService(loginChallengeRepository, authorizationCodeRepository)
 
     tokenizeRepository := repositories.NewTokenizeRepository()
-    tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository)
+    tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository, config.Client)
 
     adminHdl := handlers.NewAdminHttpHandler(adminService, tokenService)
 

@@ -12,13 +12,13 @@ COPY . .
 RUN go build -o bin/engine cmd/admin.go
 
 FROM alpine
+LABEL org.opencontainers.image.source="ghcr.io/jiramot/go-oauth2/admin"
 
 RUN apk update && apk upgrade && \
     apk --update --no-cache add tzdata
 
-LABEL org.opencontainers.image.source="ghcr.io/jiramot/go-oauth2/admin"
-
 WORKDIR /app
 EXPOSE 8081
 COPY --from=builder /app/bin/engine /app/engine
+COPY --from=builder /app/config.yaml /app/config.yaml
 CMD /app/engine
