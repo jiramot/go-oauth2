@@ -38,14 +38,16 @@ func main() {
     loginChallengeRepository := repositories.NewLoginChallengeRepository(rdb)
     authorizationService := services.NewAuthorizationService(loginChallengeRepository, config.Client, config.LoginEndpoint)
 
-    tokenizeRepository := repositories.NewTokenizeRepository()
+    tokenizeRepository := repositories.NewTokenizeRepository(rdb, config.AccessTokenDuration)
     authorizationCodeRepository := repositories.NewAuthorizationCodeRepository(rdb)
-    tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository, config.Client)
+    tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository, config.Client, config.AccessTokenDuration)
 
     hdl := handlers.NewPublicHandler(authorizationService, tokenService)
 
     e := echo.New()
-    e.Use(middleware.Logger())
+    if config.AccessLogEnabled {
+        e.Use(middleware.Logger())
+    }
     e.Use(middleware.CORS())
     e.Validator = &PublicValidator{validator: validator.New()}
     e.GET("/oauth2/auth", hdl.RequestAuthorization)

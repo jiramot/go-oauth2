@@ -37,14 +37,15 @@ func main() {
     authorizationCodeRepository := repositories.NewAuthorizationCodeRepository(rdb)
     adminService := services.NewAdminService(loginChallengeRepository, authorizationCodeRepository)
 
-    tokenizeRepository := repositories.NewTokenizeRepository()
-    tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository, config.Client)
+    tokenizeRepository := repositories.NewTokenizeRepository(rdb, config.AccessTokenDuration)
+    tokenService := services.NewTokenService(tokenizeRepository, authorizationCodeRepository, config.Client, config.AccessTokenDuration)
 
     adminHdl := handlers.NewAdminHttpHandler(adminService, tokenService)
 
     e := echo.New()
-    e.Use(middleware.Logger())
-    e.Use(middleware.CORS()) //FOR TESTING FRONTEND
+    if config.AccessLogEnabled {
+        e.Use(middleware.Logger())
+    }
     e.Validator = &AdminValidator{validator: validator.New()}
     e.POST("oauth2/auth/request/login/accept", adminHdl.AcceptLoginChallenge)
     e.POST("/oauth2/introspect", adminHdl.IntrospectToken)

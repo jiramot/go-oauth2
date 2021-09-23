@@ -4,11 +4,14 @@ import (
     "errors"
     "github.com/jiramot/go-oauth2/internal/core/domains"
     "github.com/spf13/viper"
+    "time"
 )
 
 type Configuration struct {
-    Client        domains.Clients
-    LoginEndpoint string `mapstructure:"login_endpoint"`
+    Client              domains.Clients
+    LoginEndpoint       string        `mapstructure:"login_endpoint"`
+    AccessTokenDuration time.Duration `mapstructure:"access_token_duration"`
+    AccessLogEnabled    bool          `mapstructure:"access_log_enabled"`
 }
 
 func Load() (*Configuration, error) {

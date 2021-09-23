@@ -43,7 +43,11 @@ func (hdl *PublicHttpHandler) RequestAuthorization(ctx echo.Context) error {
     if err != nil {
         return ctx.String(http.StatusBadRequest, "Bad request")
     }
-    return ctx.JSON(http.StatusOK, AuthorizationResponse{RedirectUrl: response.LoginEndpointUrl})
+    authorizationResponse := AuthorizationResponse{
+        RedirectUrl:    response.LoginEndpointUrl,
+        LoginChallenge: response.LoginChallenge,
+    }
+    return ctx.JSON(http.StatusOK, authorizationResponse)
 }
 
 func (hdl *PublicHttpHandler) Token(ctx echo.Context) error {
@@ -73,12 +77,13 @@ type AuthorizationRequest struct {
     Scope               string `query:"Scope"`
     State               string `query:"state"`
     Nonce               string `query:"nonce"`
-    CodeChallenge       string `query:"code_challenge"'`
-    CodeChallengeMethod string `query:"code_challenge_method"'`
+    CodeChallenge       string `query:"code_challenge"`
+    CodeChallengeMethod string `query:"code_challenge_method"`
 }
 
 type AuthorizationResponse struct {
-    RedirectUrl string `json:"redirect_url"`
+    RedirectUrl    string `json:"redirect_url"`
+    LoginChallenge string `json:"login_challenge"`
 }
 
 type TokenRequest struct {

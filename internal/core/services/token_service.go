@@ -5,23 +5,27 @@ import (
     "github.com/jiramot/go-oauth2/internal/core/domains"
     "github.com/jiramot/go-oauth2/internal/core/ports"
     "github.com/jiramot/go-oauth2/internal/pkg/pkce"
+    "time"
 )
 
 type tokenService struct {
     tokenizePort          ports.TokenizePort
     authorizationCodePort ports.AuthorizationCodePort
     clients               domains.Clients
+    accessTokenDuration   time.Duration
 }
 
 func NewTokenService(
     tokenizePort ports.TokenizePort,
     authorizationCodePort ports.AuthorizationCodePort,
     clients domains.Clients,
+    accessTokenDuration time.Duration,
 ) *tokenService {
     return &tokenService{
         tokenizePort:          tokenizePort,
         authorizationCodePort: authorizationCodePort,
         clients:               clients,
+        accessTokenDuration:   accessTokenDuration,
     }
 }
 
@@ -53,7 +57,7 @@ func (svc *tokenService) CreateTokenForAuthorizationCodeGrantType(token domains.
             authorizationCode.Cif,
             authorizationCode.Scope,
             authorizationCode.Amr,
-            domains.TokenTtl,
+            svc.accessTokenDuration,
         )
         tokenString, _ := svc.tokenizePort.CreateToken(payload)
         accessToken := &domains.AccessToken{

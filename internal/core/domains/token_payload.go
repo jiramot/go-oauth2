@@ -12,8 +12,6 @@ type TokenPayload struct {
     ClientId  string    `json:"aud"`
 }
 
-const TokenTtl = time.Minute * 15
-
 func NewTokenPayload(clientId string, subject string, scope string, amr string, duration time.Duration) *TokenPayload {
     now := time.Now()
     return &TokenPayload{

@@ -29,7 +29,12 @@ func (hdl *AdminHttpHandler) AcceptLoginChallenge(ctx echo.Context) error {
     }
     if authCode, err := hdl.adminUseCase.AcceptLogin(loginChallengeCode, request.Cif); err == nil {
         redirectUrl := fmt.Sprintf("%s?code=%s&state=%s", authCode.RedirectUrl, authCode.Code, authCode.State)
-        return ctx.JSON(http.StatusOK, acceptLoginChallengeResponse{RedirectTo: redirectUrl})
+        response := acceptLoginChallengeResponse{
+            RedirectTo: redirectUrl,
+            Code:       authCode.Code,
+            State:      authCode.State,
+        }
+        return ctx.JSON(http.StatusOK, response)
     } else {
         return ctx.String(http.StatusBadRequest, "Bad request")
     }
@@ -47,14 +52,16 @@ func (hdl *AdminHttpHandler) IntrospectToken(ctx echo.Context) error {
     return ctx.JSON(http.StatusOK, payload)
 }
 
-type (
-    acceptLoginChallengeResponse struct {
-        RedirectTo string `json:"redirect_url"`
-    }
-    acceptLoginChallengeRequest struct {
-        Cif string `json:"cif" validate:"required"`
-    }
-    TokenIntrospectRequest struct {
-        Token string `form:"token" validate:"required"`
-    }
-)
+type acceptLoginChallengeResponse struct {
+    RedirectTo string `json:"redirect_url"`
+    Code       string `json:"code"`
+    State      string `json:"state"`
+}
+
+type acceptLoginChallengeRequest struct {
+    Cif string `json:"cif" validate:"required"`
+}
+
+type TokenIntrospectRequest struct {
+    Token string `form:"token" validate:"required"`
+}

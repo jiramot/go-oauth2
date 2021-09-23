@@ -9,3 +9,6 @@ client:
     redirect_url: "http://localhost:9100"
 
 login_endpoint: http://localhost:3000/login
+
+access_token_duration: 1h
+access_log_enabled: false
