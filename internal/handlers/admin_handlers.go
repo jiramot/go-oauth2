@@ -51,6 +51,26 @@ func (hdl *AdminHttpHandler) IntrospectToken(ctx echo.Context) error {
     return ctx.JSON(http.StatusOK, payload)
 }
 
+func (hdl *AdminHttpHandler) CreateToken(ctx echo.Context) error {
+    request := new(CreateTokenRequest)
+    if err := util.BindAndValidateRequest(ctx, request); err != nil {
+        return ctx.String(http.StatusBadRequest, "")
+    }
+    accessToken, err := hdl.tokenUseCase.CreateTokenForImplicitGrantType(usecases.ImplicitGrantRequest{
+        Cif:      request.Cif,
+        ClientId: request.ClientId,
+        Amr:      request.Amr,
+    })
+    if err != nil {
+        return ctx.String(http.StatusBadRequest, "Bad request")
+    }
+
+    if err != nil {
+        return ctx.String(http.StatusBadRequest, "Bad request")
+    }
+    return ctx.JSON(http.StatusOK, accessToken)
+}
+
 type acceptLoginChallengeResponse struct {
     RedirectTo string `json:"redirect_url"`
     Code       string `json:"code"`
@@ -63,4 +83,10 @@ type acceptLoginChallengeRequest struct {
 
 type TokenIntrospectRequest struct {
     Token string `form:"token" validate:"required"`
+}
+
+type CreateTokenRequest struct {
+    Cif      string `json:"cif" validate:"required"`
+    ClientId string `json:"client_id" validate:"required"`
+    Amr      string `json:"amr"`
 }

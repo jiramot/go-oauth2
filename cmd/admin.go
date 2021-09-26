@@ -47,7 +47,8 @@ func main() {
         e.Use(middleware.Logger())
     }
     e.Validator = &AdminValidator{validator: validator.New()}
-    e.POST("oauth2/auth/request/login/accept", adminHdl.AcceptLoginChallenge)
+    e.POST("/oauth2/auth/request/login/accept", adminHdl.AcceptLoginChallenge)
+    e.POST("/oauth2/auth/token", adminHdl.CreateToken)
     e.POST("/oauth2/introspect", adminHdl.IntrospectToken)
     e.Logger.Fatal(e.Start(":8081"))
 }

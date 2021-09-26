@@ -4,6 +4,7 @@ import (
     "errors"
     "github.com/jiramot/go-oauth2/internal/core/domains"
     "github.com/jiramot/go-oauth2/internal/core/ports"
+    "github.com/jiramot/go-oauth2/internal/core/usecases"
     "github.com/jiramot/go-oauth2/internal/pkg/pkce"
     "time"
 )
@@ -77,4 +78,27 @@ func (svc *tokenService) IntrospectToken(token string) (*domains.TokenPayload, e
         return &domains.TokenPayload{}, err
     }
     return payload, nil
+}
+
+func (svc *tokenService) CreateTokenForImplicitGrantType(
+    implicitRequest usecases.ImplicitGrantRequest,
+) (*domains.AccessToken, error) {
+    client, err := svc.clients.FindClientByClientId(implicitRequest.ClientId)
+    if err != nil {
+        return nil, errors.New("invalid request")
+    }
+    payload := domains.NewTokenPayload(
+        client.ClientId,
+        implicitRequest.Cif,
+        client.Scope,
+        implicitRequest.Amr,
+        svc.accessTokenDuration,
+    )
+    tokenString, _ := svc.tokenizePort.CreateToken(payload)
+    accessToken := &domains.AccessToken{
+        AccessToken: tokenString,
+        ExpireAt:    payload.ExpiredAt,
+        TokenType:   "Bearer",
+    }
+    return accessToken, nil
 }
