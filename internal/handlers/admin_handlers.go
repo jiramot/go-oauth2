@@ -3,8 +3,7 @@ package handlers
 import (
     "fmt"
     "github.com/jiramot/go-oauth2/internal/core/usecases"
-    "github.com/jiramot/go-oauth2/internal/pkg"
-    util "github.com/jiramot/go-oauth2/internal/pkg"
+    "github.com/jiramot/go-oauth2/internal/pkg/util"
     "github.com/labstack/echo/v4"
     "net/http"
 )
@@ -24,7 +23,7 @@ func NewAdminHttpHandler(adminUseCase usecases.AdminAcceptLoginUseCase, tokenUse
 func (hdl *AdminHttpHandler) AcceptLoginChallenge(ctx echo.Context) error {
     loginChallengeCode := ctx.QueryParam("login_challenge")
     request := new(acceptLoginChallengeRequest)
-    if err := pkg.BindAndValidateRequest(ctx, request); err != nil {
+    if err := util.BindAndValidateRequest(ctx, request); err != nil {
         return ctx.String(http.StatusBadRequest, "Bad request")
     }
     if authCode, err := hdl.adminUseCase.AcceptLogin(loginChallengeCode, request.Cif); err == nil {

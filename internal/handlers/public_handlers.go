@@ -3,7 +3,7 @@ package handlers
 import (
     "github.com/jiramot/go-oauth2/internal/core/domains"
     "github.com/jiramot/go-oauth2/internal/core/usecases"
-    util "github.com/jiramot/go-oauth2/internal/pkg"
+    "github.com/jiramot/go-oauth2/internal/pkg/util"
     "github.com/labstack/echo/v4"
     "net/http"
 )
