@@ -24,9 +24,5 @@ func (hdl *AppGalleryHandler) OpenAppGallery(ctx echo.Context) error {
     if err != nil {
         return ctx.String(http.StatusBadRequest, "Bad request")
     }
-    return ctx.JSON(http.StatusOK, OpenAppGalleryResponse{RedirectTo: redirectUrl})
-}
-
-type OpenAppGalleryResponse struct {
-    RedirectTo string `json:"redirect_to"`
+    return ctx.Redirect(http.StatusTemporaryRedirect, redirectUrl)
 }
