@@ -9,16 +9,19 @@ COPY go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -o bin/engine cmd/admin.go
+RUN make build
 
 FROM alpine
-LABEL org.opencontainers.image.source="ghcr.io/jiramot/go-oauth2/admin"
+LABEL org.opencontainers.image.source="ghcr.io/jiramot/go-oauth2"
 
 RUN apk update && apk upgrade && \
     apk --update --no-cache add tzdata
 
 WORKDIR /app
-EXPOSE 8081
-COPY --from=builder /app/bin/engine /app/engine
+EXPOSE 8080 8081 8082
+COPY --from=builder /app/bin/admin /app/admin
+COPY --from=builder /app/bin/public /app/public
+COPY --from=builder /app/bin/app_gallery /app/app_gallery
 COPY --from=builder /app/config.yaml /app/config.yaml
-CMD /app/engine
+
+CMD /app/public
