@@ -1,0 +1,39 @@
+format_version: 10
+pipelines:
+  go-oauth2-pipeline:
+    group: sample
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      git-9484fb6:
+        git: https://github.com/jiramot/go-oauth2
+        shallow_clone: false
+        auto_update: true
+        branch: main
+    stages:
+    - build-stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: false
+        jobs:
+          go-build:
+            timeout: 0
+            tasks:
+            - exec:
+                arguments:
+                - mod
+                - tidy
+                command: go
+                run_if: passed
+            - exec:
+                arguments:
+                - build
+                - -o
+                - ./bin/admin
+                - ./cmd/admin.go
+                command: go
+                run_if: passed
